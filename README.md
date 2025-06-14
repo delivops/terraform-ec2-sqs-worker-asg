@@ -56,3 +56,29 @@ configured period (default 15 minutes).
 Set `enable_gpu` to `true` and choose a GPU instance type if the workload
 requires GPU access. When `enable_gpu` is `false` (the default), the instances
 run with the standard Docker runtime.
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+No providers.
+
+## Modules
+
+No modules.
+
+## Resources
+
+No resources.
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+No outputs.
+<!-- END_TF_DOCS -->
