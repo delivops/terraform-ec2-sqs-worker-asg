@@ -24,6 +24,9 @@ module "workers" {
     QUEUE_URL = "https://sqs.eu-west-1.amazonaws.com/123456789012/jobs-queue"
     LOG_LEVEL = "info"
   }
+  worker_secret_ids = [
+    "arn:aws:secretsmanager:eu-west-1:123456789012:secret:mysecret"
+  ]
   vpc_id               = "vpc-abc123"
   private_subnets_ids  = ["subnet-1", "subnet-2"]
   security_group_ids   = ["sg-1"]
@@ -33,6 +36,9 @@ module "workers" {
   warm_pool_capacity   = 2
 }
 ```
+
+`worker_secret_ids` contains the Secrets Manager IDs whose JSON contents are
+expanded into environment variables for the worker containers.
 
 Scale out by running:
 

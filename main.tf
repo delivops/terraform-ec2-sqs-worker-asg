@@ -50,6 +50,7 @@ locals {
     tag                  = var.image_tag,
     worker_command       = var.worker_command,
     worker_env           = var.worker_env,
+    worker_secret_ids    = var.worker_secret_ids,
     workers_per_instance = var.workers_per_instance
   })
 }

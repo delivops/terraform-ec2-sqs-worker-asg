@@ -6,10 +6,19 @@ repo="${repo}"
 tag="${tag}"
 command="${worker_command}"
 workers=${workers_per_instance}
+secrets="${worker_secret_ids}"
 
 systemctl enable --now docker
 
 mkdir -p /opt/app
+if [ -n "$secrets" ]; then
+  : > /opt/app/secrets.env
+  for sid in $secrets; do
+    aws secretsmanager get-secret-value --region ${region} --secret-id "$sid" \
+      --query SecretString --output text | \
+      jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' >> /opt/app/secrets.env
+  done
+fi
 cat >/opt/app/docker-compose.yml <<YML
 version: "3.9"
 services:
@@ -23,6 +32,10 @@ services:
 %{ for k, v in worker_env }
       - ${k}=${v}
 %{ endfor }
+%{ if length(worker_secret_ids) > 0 }
+    env_file:
+      - /opt/app/secrets.env
+%{ endif }
     deploy:
       replicas: ${workers_per_instance}
 YML

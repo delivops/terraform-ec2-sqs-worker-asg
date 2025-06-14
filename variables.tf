@@ -43,6 +43,12 @@ variable "worker_env" {
   description = "Environment variables for the worker container"
 }
 
+variable "worker_secret_ids" {
+  type        = list(string)
+  default     = []
+  description = "List of Secrets Manager secret ARNs or names whose JSON values are converted to environment variables"
+}
+
 variable "vpc_id" {
   type = string
 }
