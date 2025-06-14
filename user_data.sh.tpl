@@ -3,7 +3,8 @@ set -euxo pipefail
 
 region="${region}"
 repo="${repo}"
-queue_name="${queue_name}"
+tag="${tag}"
+command="${worker_command}"
 workers=${workers_per_instance}
 
 systemctl enable --now docker
@@ -13,10 +14,15 @@ cat >/opt/app/docker-compose.yml <<YML
 version: "3.9"
 services:
   worker:
-    image: ${repo}:latest
+    image: ${repo}:${tag}
     runtime: nvidia
+%{ if worker_command != "" }
+    command: ${worker_command}
+%{ endif }
     environment:
-      - QUEUE_URL=${queue_name}
+%{ for k, v in worker_env }
+      - ${k}=${v}
+%{ endfor }
     deploy:
       replicas: ${workers_per_instance}
 YML

@@ -25,6 +25,24 @@ variable "sqs_queue_name" {
   type = string
 }
 
+variable "image_tag" {
+  type        = string
+  default     = "latest"
+  description = "Tag of the container image to run"
+}
+
+variable "worker_command" {
+  type        = string
+  default     = ""
+  description = "Optional command override for the worker container"
+}
+
+variable "worker_env" {
+  type        = map(string)
+  default     = {}
+  description = "Environment variables for the worker container"
+}
+
 variable "vpc_id" {
   type = string
 }

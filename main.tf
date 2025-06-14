@@ -47,7 +47,9 @@ locals {
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
     region               = var.aws_region,
     repo                 = var.ecr_repo,
-    queue_name           = var.sqs_queue_name,
+    tag                  = var.image_tag,
+    worker_command       = var.worker_command,
+    worker_env           = var.worker_env,
     workers_per_instance = var.workers_per_instance
   })
 }
