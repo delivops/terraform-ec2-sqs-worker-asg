@@ -64,7 +64,9 @@ No requirements.
 
 ## Providers
 
-No providers.
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Modules
 
@@ -72,13 +74,49 @@ No modules.
 
 ## Resources
 
-No resources.
+| Name | Type |
+|------|------|
+| [aws_autoscaling_group.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
+| [aws_autoscaling_policy.scale_in](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_policy) | resource |
+| [aws_cloudwatch_metric_alarm.queue_empty](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
+| [aws_iam_instance_profile.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
+| [aws_iam_role.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy_attachment.cw_agent](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.ecr_pull](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.sqs_read](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_launch_template.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
 
 ## Inputs
 
-No inputs.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | AMI ID with Docker and needed drivers installed | `string` | n/a | yes |
+| <a name="input_asg_desired_capacity"></a> [asg\_desired\_capacity](#input\_asg\_desired\_capacity) | n/a | `number` | `0` | no |
+| <a name="input_asg_max_size"></a> [asg\_max\_size](#input\_asg\_max\_size) | n/a | `number` | `5` | no |
+| <a name="input_asg_min_size"></a> [asg\_min\_size](#input\_asg\_min\_size) | n/a | `number` | `0` | no |
+| <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | n/a | `string` | n/a | yes |
+| <a name="input_ecr_repo"></a> [ecr\_repo](#input\_ecr\_repo) | ECR repository URI | `string` | n/a | yes |
+| <a name="input_enable_gpu"></a> [enable\_gpu](#input\_enable\_gpu) | Whether worker containers require GPU access | `bool` | `false` | no |
+| <a name="input_environment"></a> [environment](#input\_environment) | n/a | `string` | n/a | yes |
+| <a name="input_image_tag"></a> [image\_tag](#input\_image\_tag) | Tag of the container image to run | `string` | `"latest"` | no |
+| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | n/a | `string` | `"t3.large"` | no |
+| <a name="input_key_name"></a> [key\_name](#input\_key\_name) | n/a | `string` | n/a | yes |
+| <a name="input_private_subnets_ids"></a> [private\_subnets\_ids](#input\_private\_subnets\_ids) | n/a | `list(string)` | n/a | yes |
+| <a name="input_queue_empty_minutes"></a> [queue\_empty\_minutes](#input\_queue\_empty\_minutes) | n/a | `number` | `15` | no |
+| <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | n/a | `list(string)` | n/a | yes |
+| <a name="input_sqs_queue_name"></a> [sqs\_queue\_name](#input\_sqs\_queue\_name) | n/a | `string` | n/a | yes |
+| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | n/a | `string` | n/a | yes |
+| <a name="input_warm_pool_capacity"></a> [warm\_pool\_capacity](#input\_warm\_pool\_capacity) | n/a | `number` | `0` | no |
+| <a name="input_worker_command"></a> [worker\_command](#input\_worker\_command) | Optional command override for the worker container | `string` | `""` | no |
+| <a name="input_worker_disk_size"></a> [worker\_disk\_size](#input\_worker\_disk\_size) | n/a | `number` | `50` | no |
+| <a name="input_worker_env"></a> [worker\_env](#input\_worker\_env) | Environment variables for the worker container | `map(string)` | `{}` | no |
+| <a name="input_worker_secret_ids"></a> [worker\_secret\_ids](#input\_worker\_secret\_ids) | List of Secrets Manager secret ARNs or names whose JSON values are converted to environment variables | `list(string)` | `[]` | no |
+| <a name="input_workers_per_instance"></a> [workers\_per\_instance](#input\_workers\_per\_instance) | n/a | `number` | `1` | no |
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_asg_name"></a> [asg\_name](#output\_asg\_name) | n/a |
+| <a name="output_launch_template_id"></a> [launch\_template\_id](#output\_launch\_template\_id) | n/a |
 <!-- END_TF_DOCS -->
