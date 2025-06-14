@@ -15,7 +15,7 @@ module "workers" {
   environment          = "prod"
   aws_region           = "eu-west-1"
   ami_id               = "ami-0123456789abcdef0"
-  instance_type        = "g5.4xlarge"
+  instance_type        = "g5.4xlarge"    # use a CPU instance type if GPUs aren't needed
   ecr_repo             = "123456789012.dkr.ecr.eu-west-1.amazonaws.com/my-worker"
   sqs_queue_name       = "jobs-queue"
   image_tag            = "v1.2.3"
@@ -27,6 +27,7 @@ module "workers" {
   worker_secret_ids = [
     "arn:aws:secretsmanager:eu-west-1:123456789012:secret:mysecret"
   ]
+  enable_gpu          = true             # set only when workers need GPUs
   vpc_id               = "vpc-abc123"
   private_subnets_ids  = ["subnet-1", "subnet-2"]
   security_group_ids   = ["sg-1"]
@@ -38,7 +39,8 @@ module "workers" {
 ```
 
 `worker_secret_ids` contains the Secrets Manager IDs whose JSON contents are
-expanded into environment variables for the worker containers.
+expanded into environment variables for the worker containers. The secrets are
+parsed with Python at boot time so no additional tools like `jq` are required.
 
 Scale out by running:
 
@@ -50,3 +52,7 @@ aws autoscaling set-desired-capacity \
 
 The ASG will scale in automatically when the queue has been empty for the
 configured period (default 15 minutes).
+
+Set `enable_gpu` to `true` and choose a GPU instance type if the workload
+requires GPU access. When `enable_gpu` is `false` (the default), the instances
+run with the standard Docker runtime.

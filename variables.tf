@@ -12,8 +12,9 @@ variable "ami_id" {
 }
 
 variable "instance_type" {
-  type    = string
-  default = "g5.4xlarge"
+  type = string
+  # t3.large works for generic CPU workloads; override for GPU instances
+  default = "t3.large"
 }
 
 variable "ecr_repo" {
@@ -47,6 +48,12 @@ variable "worker_secret_ids" {
   type        = list(string)
   default     = []
   description = "List of Secrets Manager secret ARNs or names whose JSON values are converted to environment variables"
+}
+
+variable "enable_gpu" {
+  type        = bool
+  default     = false
+  description = "Whether worker containers require GPU access"
 }
 
 variable "vpc_id" {

@@ -16,7 +16,7 @@ if [ -n "$secrets" ]; then
   for sid in $secrets; do
     aws secretsmanager get-secret-value --region ${region} --secret-id "$sid" \
       --query SecretString --output text | \
-      jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' >> /opt/app/secrets.env
+      python3 -c 'import json,sys; d=json.load(sys.stdin); print("\n".join(f"{k}={v}" for k,v in d.items()))' >> /opt/app/secrets.env
   done
 fi
 cat >/opt/app/docker-compose.yml <<YML
@@ -24,7 +24,9 @@ version: "3.9"
 services:
   worker:
     image: ${repo}:${tag}
+%{ if enable_gpu }
     runtime: nvidia
+%{ endif }
 %{ if worker_command != "" }
     command: ${worker_command}
 %{ endif }
@@ -39,9 +41,10 @@ services:
     deploy:
       replicas: ${workers_per_instance}
 YML
-
+%{ if enable_gpu }
 export CUDA_MPS_ACTIVE_THREAD_PERCENTAGE=$((100 / workers))
 nvidia-cuda-mps-control -d || true
+%{ endif }
 
 cat >/etc/systemd/system/app.service <<UNIT
 [Unit]
