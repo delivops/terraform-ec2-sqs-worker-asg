@@ -16,7 +16,9 @@ resource "aws_autoscaling_group" "workers" {
     for_each = var.warm_pool_capacity > 0 ? [1] : []
     content {
       max_group_prepared_capacity = var.warm_pool_capacity
-      reuse_on_scale_in           = true
+      instance_reuse_policy {
+        reuse_on_scale_in = true
+      }
     }
   }
 
