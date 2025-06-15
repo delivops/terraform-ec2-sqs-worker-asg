@@ -50,6 +50,12 @@ variable "worker_secret_ids" {
   description = "List of Secrets Manager secret ARNs or names whose JSON values are converted to environment variables"
 }
 
+variable "fluentbit_config_ssm_path" {
+  type        = string
+  default     = ""
+  description = "SSM parameter name containing Fluent Bit configuration. When empty, Fluent Bit is not deployed"
+}
+
 variable "enable_gpu" {
   type        = bool
   default     = false
