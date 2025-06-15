@@ -16,10 +16,10 @@ resource "aws_autoscaling_policy" "scale_in" {
   name                   = "${var.environment}-asg-scale-in"
   autoscaling_group_name = aws_autoscaling_group.workers.name
   policy_type            = "StepScaling"
-  adjustment_type        = "ChangeInCapacity"
+  adjustment_type        = "ExactCapacity"
 
   step_adjustment {
     metric_interval_lower_bound = 0
-    scaling_adjustment          = -1
+    scaling_adjustment          = 0
   }
 }
