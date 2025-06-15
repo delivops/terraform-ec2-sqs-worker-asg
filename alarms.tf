@@ -21,6 +21,6 @@ resource "aws_autoscaling_policy" "scale_in" {
 
   step_adjustment {
     metric_interval_lower_bound = 0
-    adjustment                  = -1
+    scaling_adjustment          = -1
   }
 }
