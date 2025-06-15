@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+# Log user data output
+exec > >(tee -a /var/log/user-data.log)
+exec 2>&1
+
+asg_name="${asg_name}"
+
 region="${region}"
 repo="${repo}"
 tag="${tag}"
@@ -8,6 +14,23 @@ command="${worker_command}"
 workers=${workers_per_instance}
 secrets="${join(" ", worker_secret_ids)}"
 fluentbit_config="${fluentbit_config_ssm_path}"
+
+instance_id=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+
+signal_failure() {
+    echo "ERROR: User data script failed at $(date)"
+    aws autoscaling complete-lifecycle-action \
+        --lifecycle-hook-name "user-data-completion-hook" \
+        --auto-scaling-group-name "$asg_name" \
+        --instance-id "$instance_id" \
+        --lifecycle-action-result "ABANDON" \
+        --region "$region" || true
+    exit 1
+}
+
+trap signal_failure ERR
+
+echo "=== Starting user data script at $(date) ==="
 
 # Detect OS version and install Docker accordingly
 if command -v dnf &> /dev/null; then
@@ -111,3 +134,12 @@ EOF
 
 systemctl daemon-reload
 systemctl enable --now app.service
+
+aws autoscaling complete-lifecycle-action \
+    --lifecycle-hook-name "user-data-completion-hook" \
+    --auto-scaling-group-name "$asg_name" \
+    --instance-id "$instance_id" \
+    --lifecycle-action-result "CONTINUE" \
+    --region "$region" || true
+
+echo "=== User data script completed successfully at $(date) ==="
