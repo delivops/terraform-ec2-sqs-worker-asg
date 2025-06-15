@@ -27,6 +27,8 @@ module "workers" {
   worker_secret_ids = [
     "arn:aws:secretsmanager:eu-west-1:123456789012:secret:mysecret"
   ]
+  # Optional: fetch Fluent Bit configuration from this SSM parameter
+  fluentbit_config_ssm_path = "/logging/fluent-bit"
   enable_gpu          = true             # set only when workers need GPUs
   vpc_id               = "vpc-abc123"
   private_subnets_ids  = ["subnet-1", "subnet-2"]

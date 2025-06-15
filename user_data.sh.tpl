@@ -6,7 +6,7 @@ repo="${repo}"
 tag="${tag}"
 command="${worker_command}"
 workers=${workers_per_instance}
-secrets="${worker_secret_ids}"
+secrets="${join(" ", worker_secret_ids)}"
 fluentbit_config="${fluentbit_config_ssm_path}"
 
 systemctl enable --now docker
