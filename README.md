@@ -98,6 +98,7 @@ No modules.
 | <a name="input_ecr_repo"></a> [ecr\_repo](#input\_ecr\_repo) | ECR repository URI | `string` | n/a | yes |
 | <a name="input_enable_gpu"></a> [enable\_gpu](#input\_enable\_gpu) | Whether worker containers require GPU access | `bool` | `false` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | n/a | `string` | n/a | yes |
+| <a name="input_fluentbit_config_ssm_path"></a> [fluentbit\_config\_ssm\_path](#input\_fluentbit\_config\_ssm\_path) | SSM parameter name containing Fluent Bit configuration. When empty, Fluent Bit is not deployed | `string` | `""` | no |
 | <a name="input_image_tag"></a> [image\_tag](#input\_image\_tag) | Tag of the container image to run | `string` | `"latest"` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | n/a | `string` | `"t3.large"` | no |
 | <a name="input_key_name"></a> [key\_name](#input\_key\_name) | n/a | `string` | n/a | yes |
