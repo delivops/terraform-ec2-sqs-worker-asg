@@ -77,6 +77,9 @@ services:
     volumes:
       - /opt/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    environment:
+      - APPLICATION=${name}
+      - ENVIRONMENT=${environment}
 %{ endif }
 YML
 

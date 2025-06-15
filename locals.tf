@@ -9,5 +9,7 @@ locals {
     workers_per_instance      = var.workers_per_instance,
     enable_gpu                = var.enable_gpu,
     fluentbit_config_ssm_path = var.fluentbit_config_ssm_path,
+    name                      = var.name,
+    environment               = var.environment,
   })
 }
