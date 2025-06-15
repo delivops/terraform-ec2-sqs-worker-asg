@@ -1,5 +1,5 @@
 resource "aws_launch_template" "worker" {
-  name_prefix   = "${var.environment}-worker-"
+  name_prefix   = "${var.environment}-${var.name}-"
   image_id      = var.ami_id
   instance_type = var.instance_type
   key_name      = var.key_name
@@ -25,7 +25,7 @@ resource "aws_launch_template" "worker" {
     resource_type = "instance"
     tags = {
       Environment = var.environment
-      Application = "queue-worker"
+      Application = var.name
     }
   }
 }

@@ -13,6 +13,7 @@ module "workers" {
   source  = "./"
 
   environment          = "prod"
+  name                 = "queue-worker"
   aws_region           = "eu-west-1"
   ami_id               = "ami-0123456789abcdef0"
   instance_type        = "g5.4xlarge"    # use a CPU instance type if GPUs aren't needed
@@ -37,6 +38,16 @@ module "workers" {
   workers_per_instance = 5
   asg_max_size         = 10
   warm_pool_capacity   = 2
+  additional_policies  = [
+    jsonencode({
+      Version = "2012-10-17"
+      Statement = [{
+        Effect = "Allow"
+        Action = ["s3:ListBucket"]
+        Resource = "arn:aws:s3:::example-bucket"
+      }]
+    })
+  ]
 }
 ```
 
@@ -83,6 +94,7 @@ No modules.
 | [aws_cloudwatch_metric_alarm.queue_empty](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
 | [aws_iam_instance_profile.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_role.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy.additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.cloudwatch_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy_attachment.cw_agent](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.ecr_pull](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
@@ -93,6 +105,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_additional_policies"></a> [additional\_policies](#input\_additional\_policies) | List of additional IAM policy documents to attach to the worker role | `list(string)` | `[]` | no |
 | <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | AMI ID with Docker and needed drivers installed | `string` | n/a | yes |
 | <a name="input_asg_desired_capacity"></a> [asg\_desired\_capacity](#input\_asg\_desired\_capacity) | n/a | `number` | `0` | no |
 | <a name="input_asg_max_size"></a> [asg\_max\_size](#input\_asg\_max\_size) | n/a | `number` | `5` | no |
@@ -105,6 +118,7 @@ No modules.
 | <a name="input_image_tag"></a> [image\_tag](#input\_image\_tag) | Tag of the container image to run | `string` | `"latest"` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | n/a | `string` | `"t3.large"` | no |
 | <a name="input_key_name"></a> [key\_name](#input\_key\_name) | n/a | `string` | n/a | yes |
+| <a name="input_name"></a> [name](#input\_name) | Name of the application or workload | `string` | n/a | yes |
 | <a name="input_private_subnets_ids"></a> [private\_subnets\_ids](#input\_private\_subnets\_ids) | n/a | `list(string)` | n/a | yes |
 | <a name="input_queue_empty_minutes"></a> [queue\_empty\_minutes](#input\_queue\_empty\_minutes) | n/a | `number` | `15` | no |
 | <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | n/a | `list(string)` | n/a | yes |
