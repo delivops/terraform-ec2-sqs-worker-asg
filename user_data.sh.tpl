@@ -36,7 +36,8 @@ ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
 sleep 10
 
 mkdir -p /opt/app
-
+mkdir -p /opt/fluent-bit
+# Prepare environment variables for the worker
 if [ -n "$fluentbit_config" ]; then
   aws ssm get-parameter --region ${region} --name "$fluentbit_config" --with-decryption --query Parameter.Value --output text > /opt/fluent-bit/fluent-bit.conf
 fi
@@ -51,7 +52,6 @@ fi
 
 # Create docker-compose.yml
 cat >/opt/app/docker-compose.yml <<YML
-version: "3.9"
 services:
   worker:
     image: ${repo}:${tag}
