@@ -46,7 +46,7 @@ resource "aws_iam_role_policy" "cloudwatch_logs" {
       {
         Effect   = "Allow"
         Action   = ["ssm:GetParameter"]
-        Resource = "arn:aws:ssm:*:*:parameter${var.fluentbit_config_ssm_path}"
+        Resource = "arn:aws:ssm:*:*:parameter/${var.fluentbit_config_ssm_path}"
       }
     ]
   })
