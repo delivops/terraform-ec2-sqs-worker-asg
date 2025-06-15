@@ -63,8 +63,9 @@ aws autoscaling set-desired-capacity \
   --desired-capacity <N> --honor-cooldown
 ```
 
-The ASG will scale down to zero automatically when the queue has been empty for the
-configured period (default 15 minutes).
+The ASG will scale down to its minimum capacity automatically when the queue has been empty for the
+configured period (default 15 minutes). The minimum is controlled by the
+`asg_min_size` variable.
 
 Set `enable_gpu` to `true` and choose a GPU instance type if the workload
 requires GPU access. When `enable_gpu` is `false` (the default), the instances
