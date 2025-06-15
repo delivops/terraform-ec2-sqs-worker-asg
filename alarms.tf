@@ -17,7 +17,6 @@ resource "aws_autoscaling_policy" "scale_in" {
   autoscaling_group_name = aws_autoscaling_group.workers.name
   policy_type            = "StepScaling"
   adjustment_type        = "ChangeInCapacity"
-  cooldown               = 900
 
   step_adjustment {
     metric_interval_lower_bound = 0
