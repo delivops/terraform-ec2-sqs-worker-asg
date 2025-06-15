@@ -2,6 +2,7 @@ locals {
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
     environment_name          = var.environment,
     application_name          = replace(var.name, "-", "_"),
+    asg_name                  = "${var.environment}-${var.name}-asg",
     region                    = var.aws_region,
     repo                      = var.ecr_repo,
     tag                       = var.image_tag,

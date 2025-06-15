@@ -52,6 +52,20 @@ resource "aws_iam_role_policy" "cloudwatch_logs" {
   })
 }
 
+resource "aws_iam_role_policy" "lifecycle" {
+  name = "${var.environment}-${var.name}-lifecycle"
+  role = aws_iam_role.worker.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["autoscaling:CompleteLifecycleAction"]
+      Resource = "*"
+    }]
+  })
+}
+
 resource "aws_iam_instance_profile" "worker" {
   name = "${var.environment}-${var.name}-profile"
   role = aws_iam_role.worker.name
