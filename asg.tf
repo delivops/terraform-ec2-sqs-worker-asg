@@ -1,5 +1,5 @@
 resource "aws_autoscaling_group" "workers" {
-  name                = "${var.environment}-worker-asg"
+  name                = "${var.environment}-${var.name}-asg"
   max_size            = var.asg_max_size
   min_size            = var.asg_min_size
   desired_capacity    = var.asg_desired_capacity

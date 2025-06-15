@@ -2,6 +2,11 @@ variable "environment" {
   type = string
 }
 
+variable "name" {
+  type        = string
+  description = "Name of the application or workload"
+}
+
 variable "aws_region" {
   type = string
 }
@@ -111,4 +116,10 @@ variable "worker_disk_size" {
 variable "queue_empty_minutes" {
   type    = number
   default = 15
+}
+
+variable "additional_policies" {
+  type        = list(string)
+  default     = []
+  description = "List of additional IAM policy documents to attach to the worker role"
 }
