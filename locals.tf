@@ -8,6 +8,6 @@ locals {
     worker_secret_ids         = var.worker_secret_ids,
     workers_per_instance      = var.workers_per_instance,
     enable_gpu                = var.enable_gpu,
-    fluentbit_config_ssm_path = var.fluentbit_config_ssm_path
+    fluentbit_config_ssm_path = var.fluentbit_config_ssm_path,
   })
 }

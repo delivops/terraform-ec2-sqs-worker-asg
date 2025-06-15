@@ -9,10 +9,34 @@ workers=${workers_per_instance}
 secrets="${join(" ", worker_secret_ids)}"
 fluentbit_config="${fluentbit_config_ssm_path}"
 
-systemctl enable --now docker
+# Detect OS version and install Docker accordingly
+if command -v dnf &> /dev/null; then
+    echo "Detected Amazon Linux 2023, using dnf"
+    dnf update -y
+    dnf install -y docker
+elif command -v yum &> /dev/null; then
+    echo "Detected Amazon Linux 2, using yum"
+    yum update -y
+    yum install -y docker
+else
+    echo "Unsupported OS - neither yum nor dnf found"
+    exit 1
+fi
+
+systemctl enable docker
+systemctl start docker
+usermod -a -G docker ec2-user
+
+# Install Docker Compose
+curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+# Wait for Docker to be ready
+sleep 10
 
 mkdir -p /opt/app
-mkdir -p /opt/fluent-bit
+
 if [ -n "$fluentbit_config" ]; then
   aws ssm get-parameter --region ${region} --name "$fluentbit_config" --with-decryption --query Parameter.Value --output text > /opt/fluent-bit/fluent-bit.conf
 fi
@@ -24,6 +48,8 @@ if [ -n "$secrets" ]; then
       python3 -c 'import json,sys; d=json.load(sys.stdin); print("\n".join(f"{k}={v}" for k,v in d.items()))' >> /opt/app/secrets.env
   done
 fi
+
+# Create docker-compose.yml
 cat >/opt/app/docker-compose.yml <<YML
 version: "3.9"
 services:
@@ -53,12 +79,19 @@ services:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
 %{ endif }
 YML
+
+# GPU (optional)
 %{ if enable_gpu }
 export CUDA_MPS_ACTIVE_THREAD_PERCENTAGE=$((100 / workers))
 nvidia-cuda-mps-control -d || true
 %{ endif }
 
-cat >/etc/systemd/system/app.service <<UNIT
+# Docker auth
+aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${repo}
+docker-compose -f /opt/app/docker-compose.yml pull
+
+# Create systemd unit
+cat >/etc/systemd/system/app.service <<'EOF'
 [Unit]
 Description=Queue worker stack
 After=docker.service
@@ -67,13 +100,11 @@ Requires=docker.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStartPre=/usr/bin/aws ecr get-login-password --region ${region} | \
-             /usr/bin/docker login --username AWS --password-stdin ${repo}
-ExecStartPre=/usr/bin/docker compose -f /opt/app/docker-compose.yml pull
-ExecStart=/usr/bin/docker compose -f /opt/app/docker-compose.yml up -d --scale worker=${workers_per_instance}
-ExecStop=/usr/bin/docker compose -f /opt/app/docker-compose.yml down
-UNIT
+ExecStartPre=/bin/bash -c '/usr/bin/aws ecr get-login-password --region ${region} | /usr/bin/docker login --username AWS --password-stdin ${repo}'
+ExecStartPre=/usr/bin/docker-compose -f /opt/app/docker-compose.yml pull
+ExecStart=/usr/bin/docker-compose -f /opt/app/docker-compose.yml up -d
+ExecStop=/usr/bin/docker-compose -f /opt/app/docker-compose.yml down
+EOF
 
 systemctl daemon-reload
 systemctl enable --now app.service
-EOF
