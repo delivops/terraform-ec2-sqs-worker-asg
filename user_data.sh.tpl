@@ -78,8 +78,8 @@ services:
       - /opt/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
     environment:
-      - APPLICATION=${name}
-      - ENVIRONMENT=${environment}
+      - ENVIRONMENT=${environment_name}
+      - APPLICATION=${application_name}
 %{ endif }
 YML
 

@@ -1,5 +1,7 @@
 locals {
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
+    environment_name          = var.environment,
+    application_name          = replace(var.name, "-", "_"),
     region                    = var.aws_region,
     repo                      = var.ecr_repo,
     tag                       = var.image_tag,
@@ -9,7 +11,5 @@ locals {
     workers_per_instance      = var.workers_per_instance,
     enable_gpu                = var.enable_gpu,
     fluentbit_config_ssm_path = var.fluentbit_config_ssm_path,
-    name                      = var.name,
-    environment               = var.environment,
   })
 }
