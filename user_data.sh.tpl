@@ -6,11 +6,16 @@ repo="${repo}"
 tag="${tag}"
 command="${worker_command}"
 workers=${workers_per_instance}
-secrets="${worker_secret_ids}"
+secrets="${join(" ", worker_secret_ids)}"
+fluentbit_config="${fluentbit_config_ssm_path}"
 
 systemctl enable --now docker
 
 mkdir -p /opt/app
+mkdir -p /opt/fluent-bit
+if [ -n "$fluentbit_config" ]; then
+  aws ssm get-parameter --region ${region} --name "$fluentbit_config" --with-decryption --query Parameter.Value --output text > /opt/fluent-bit/fluent-bit.conf
+fi
 if [ -n "$secrets" ]; then
   : > /opt/app/secrets.env
   for sid in $secrets; do
@@ -40,6 +45,13 @@ services:
 %{ endif }
     deploy:
       replicas: ${workers_per_instance}
+%{ if fluentbit_config_ssm_path != "" }
+  fluent-bit:
+    image: fluent/fluent-bit:latest
+    volumes:
+      - /opt/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+%{ endif }
 YML
 %{ if enable_gpu }
 export CUDA_MPS_ACTIVE_THREAD_PERCENTAGE=$((100 / workers))
