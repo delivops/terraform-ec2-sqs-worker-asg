@@ -17,9 +17,22 @@ resource "aws_iam_role_policy_attachment" "ecr_pull" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
-resource "aws_iam_role_policy_attachment" "sqs_read" {
-  role       = aws_iam_role.worker.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSQSReadOnlyAccess"
+resource "aws_iam_role_policy" "sqs" {
+  name  = "${var.environment}-${var.name}-sqs"
+  role  = aws_iam_role.worker.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "sqs:*"
+        ]
+        Resource = "arn:aws:sqs:*:*:${var.sqs_queue_name}"
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "cw_agent" {
