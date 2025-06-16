@@ -26,7 +26,7 @@ module "workers" {
     LOG_LEVEL = "info"
   }
   worker_secret_ids = [
-    "mysecret"
+    "arn:aws:secretsmanager:eu-west-1:123456789012:secret:mysecret"
   ]
   # Optional: fetch Fluent Bit configuration from this SSM parameter
   fluentbit_config_ssm_path = "/logging/fluent-bit"
@@ -51,7 +51,7 @@ module "workers" {
 }
 ```
 
-`worker_secret_ids` contains the Secrets Manager IDs whose JSON contents are
+`worker_secret_ids` contains the Secrets Manager ARNs whose JSON contents are
 expanded into environment variables for the worker containers. The secrets are
 parsed with Python at boot time so no additional tools like `jq` are required.
 The module automatically grants the EC2 role permission to retrieve these

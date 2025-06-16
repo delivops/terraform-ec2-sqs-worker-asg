@@ -65,8 +65,7 @@ resource "aws_iam_role_policy" "secrets" {
       Effect = "Allow"
       Action = ["secretsmanager:GetSecretValue"]
       Resource = [
-        for sid in var.worker_secret_ids :
-        "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${sid}"
+        for sid in var.worker_secret_ids : "${sid}"
       ]
     }]
   })

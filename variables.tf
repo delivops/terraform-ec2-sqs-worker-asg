@@ -52,7 +52,7 @@ variable "worker_env" {
 variable "worker_secret_ids" {
   type        = list(string)
   default     = []
-  description = "List of Secrets Manager secret IDs whose JSON values are converted to environment variables"
+  description = "List of Secrets Manager secret ARNs whose JSON values are converted to environment variables"
 }
 
 variable "fluentbit_config_ssm_path" {
