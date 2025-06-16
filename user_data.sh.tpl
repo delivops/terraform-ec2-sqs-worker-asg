@@ -15,24 +15,29 @@ workers=${workers_per_instance}
 secrets="${join(" ", worker_secret_ids)}"
 fluentbit_config="${fluentbit_config_ssm_path}"
 
-instance_id=$(ec2-metadata -i | awk '{print $2}')
 
-signal_failure() {
-    echo "ERROR: User data script failed at $(date)"
-    aws autoscaling complete-lifecycle-action \
-        --lifecycle-hook-name "user-data-completion-hook" \
-        --auto-scaling-group-name "$asg_name" \
-        --instance-id "$instance_id" \
-        --lifecycle-action-result "ABANDON" \
-        --region "$region" || true
-    exit 1
-}
+# Get instance ID with fallback method
+instance_id=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+if [ -z "$instance_id" ]; then
+    echo "Curl failed, trying ec2-metadata..."
+    instance_id=$(ec2-metadata -i | awk '{print $2}')
+fi
+echo "Instance ID: $instance_id"
 
-trap signal_failure ERR
+# Install AWS CLI if not available
+if ! command -v aws &> /dev/null; then
+    echo "AWS CLI not found, installing..."
+    if command -v dnf &> /dev/null; then
+        dnf install -y awscli
+    elif command -v yum &> /dev/null; then
+        yum install -y awscli
+    fi
+    echo "AWS CLI installed successfully"
+fi
 
 echo "=== Starting user data script at $(date) ==="
 
-# Detect OS version and install Docker accordingly
+# Detect OS version and install Docker
 if command -v dnf &> /dev/null; then
     echo "Detected Amazon Linux 2023, using dnf"
     dnf update -y
@@ -137,12 +142,5 @@ EOF
 
 systemctl daemon-reload
 systemctl enable --now app.service
-
-aws autoscaling complete-lifecycle-action \
-    --lifecycle-hook-name "user-data-completion-hook" \
-    --auto-scaling-group-name "$asg_name" \
-    --instance-id "$instance_id" \
-    --lifecycle-action-result "CONTINUE" \
-    --region "$region" || true
 
 echo "=== User data script completed successfully at $(date) ==="

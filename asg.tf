@@ -27,11 +27,3 @@ resource "aws_autoscaling_group" "workers" {
   }
 }
 
-resource "aws_autoscaling_lifecycle_hook" "user_data_completion" {
-  count                  = var.warm_pool_capacity > 0 ? 1 : 0
-  name                   = "user-data-completion-hook"
-  autoscaling_group_name = aws_autoscaling_group.workers.name
-  lifecycle_transition   = "autoscaling:EC2_INSTANCE_LAUNCHING"
-  default_result         = "ABANDON"
-  heartbeat_timeout      = 3600
-}

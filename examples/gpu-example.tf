@@ -5,6 +5,12 @@ variable "environment" {
   default     = "dev"
 }
 
+variable "name" {
+  description = "Name prefix for resources"
+  type        = string
+  default     = "queue-worker"
+}
+
 variable "aws_region" {
   description = "AWS region"
   type        = string
@@ -95,6 +101,7 @@ variable "asg_desired_capacity" {
 
 module "simple-worker-asg" {
   source         = "../"
+  name           = var.name
   environment    = var.environment
   aws_region     = var.aws_region
   ami_id         = var.ami_id
@@ -115,4 +122,5 @@ module "simple-worker-asg" {
   asg_max_size              = var.asg_max_size
   asg_min_size              = var.asg_min_size
   asg_desired_capacity      = var.asg_desired_capacity
+  
 }
