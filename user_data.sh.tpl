@@ -51,6 +51,9 @@ else
     exit 1
 fi
 
+systemctl disable amazon-ecs-volume-plugin.service || true
+systemctl disable ecs.service || true
+
 systemctl enable docker
 systemctl start docker
 usermod -a -G docker ec2-user
