@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_iam_role" "worker" {
   name = "${var.environment}-${var.name}-role"
   assume_role_policy = jsonencode({
@@ -46,9 +48,27 @@ resource "aws_iam_role_policy" "cloudwatch_logs" {
       {
         Effect   = "Allow"
         Action   = ["ssm:GetParameter"]
-        Resource = "arn:aws:ssm:*:*:parameter${var.fluentbit_config_ssm_path}"
+        Resource = "arn:aws:ssm:*:*:parameter/${var.fluentbit_config_ssm_path}"
       }
     ]
+  })
+}
+
+resource "aws_iam_role_policy" "secrets" {
+  count = length(var.worker_secret_ids) > 0 ? 1 : 0
+  name  = "${var.environment}-${var.name}-secrets"
+  role  = aws_iam_role.worker.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = ["secretsmanager:GetSecretValue"]
+      Resource = [
+        for sid in var.worker_secret_ids :
+        "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${sid}"
+      ]
+    }]
   })
 }
 

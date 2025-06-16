@@ -26,7 +26,7 @@ module "workers" {
     LOG_LEVEL = "info"
   }
   worker_secret_ids = [
-    "arn:aws:secretsmanager:eu-west-1:123456789012:secret:mysecret"
+    "mysecret"
   ]
   # Optional: fetch Fluent Bit configuration from this SSM parameter
   fluentbit_config_ssm_path = "/logging/fluent-bit"
@@ -54,6 +54,9 @@ module "workers" {
 `worker_secret_ids` contains the Secrets Manager IDs whose JSON contents are
 expanded into environment variables for the worker containers. The secrets are
 parsed with Python at boot time so no additional tools like `jq` are required.
+The module automatically grants the EC2 role permission to retrieve these
+secrets using `secretsmanager:GetSecretValue`. When `fluentbit_config_ssm_path`
+is set, it also allows `ssm:GetParameter` on that parameter.
 
 Scale out by running:
 
@@ -99,10 +102,12 @@ No modules.
 | [aws_iam_role_policy.additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.cloudwatch_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.lifecycle](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.secrets](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy_attachment.cw_agent](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.ecr_pull](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.sqs_read](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_launch_template.worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 
 ## Inputs
 
@@ -131,7 +136,7 @@ No modules.
 | <a name="input_worker_command"></a> [worker\_command](#input\_worker\_command) | Optional command override for the worker container | `string` | `""` | no |
 | <a name="input_worker_disk_size"></a> [worker\_disk\_size](#input\_worker\_disk\_size) | n/a | `number` | `50` | no |
 | <a name="input_worker_env"></a> [worker\_env](#input\_worker\_env) | Environment variables for the worker container | `map(string)` | `{}` | no |
-| <a name="input_worker_secret_ids"></a> [worker\_secret\_ids](#input\_worker\_secret\_ids) | List of Secrets Manager secret ARNs or names whose JSON values are converted to environment variables | `list(string)` | `[]` | no |
+| <a name="input_worker_secret_ids"></a> [worker\_secret\_ids](#input\_worker\_secret\_ids) | List of Secrets Manager secret IDs whose JSON values are converted to environment variables | `list(string)` | `[]` | no |
 | <a name="input_workers_per_instance"></a> [workers\_per\_instance](#input\_workers\_per\_instance) | n/a | `number` | `1` | no |
 
 ## Outputs
