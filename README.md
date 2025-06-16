@@ -136,7 +136,7 @@ No modules.
 | <a name="input_worker_command"></a> [worker\_command](#input\_worker\_command) | Optional command override for the worker container | `string` | `""` | no |
 | <a name="input_worker_disk_size"></a> [worker\_disk\_size](#input\_worker\_disk\_size) | n/a | `number` | `50` | no |
 | <a name="input_worker_env"></a> [worker\_env](#input\_worker\_env) | Environment variables for the worker container | `map(string)` | `{}` | no |
-| <a name="input_worker_secret_ids"></a> [worker\_secret\_ids](#input\_worker\_secret\_ids) | List of Secrets Manager secret IDs whose JSON values are converted to environment variables | `list(string)` | `[]` | no |
+| <a name="input_worker_secret_ids"></a> [worker\_secret\_ids](#input\_worker\_secret\_ids) | List of Secrets Manager secret ARNs whose JSON values are converted to environment variables | `list(string)` | `[]` | no |
 | <a name="input_workers_per_instance"></a> [workers\_per\_instance](#input\_workers\_per\_instance) | n/a | `number` | `1` | no |
 
 ## Outputs

@@ -130,6 +130,9 @@ ExecStartPre=/bin/bash -c '/usr/bin/aws ecr get-login-password --region ${region
 ExecStartPre=/usr/bin/docker-compose -f /opt/app/docker-compose.yml pull
 ExecStart=/usr/bin/docker-compose -f /opt/app/docker-compose.yml up -d
 ExecStop=/usr/bin/docker-compose -f /opt/app/docker-compose.yml down
+
+[Install]
+WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload
