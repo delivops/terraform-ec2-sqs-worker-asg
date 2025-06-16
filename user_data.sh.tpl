@@ -15,7 +15,7 @@ workers=${workers_per_instance}
 secrets="${join(" ", worker_secret_ids)}"
 fluentbit_config="${fluentbit_config_ssm_path}"
 
-instance_id=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+instance_id=$(ec2-metadata -i | awk '{print $2}')
 
 signal_failure() {
     echo "ERROR: User data script failed at $(date)"
