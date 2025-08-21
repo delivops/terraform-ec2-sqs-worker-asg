@@ -1,3 +1,5 @@
+[![DelivOps banner](https://raw.githubusercontent.com/delivops/.github/main/images/banner.png?raw=true)](https://delivops.com)
+
 # EC2 SQS Worker ASG Module
 
 This module provisions an Auto Scaling group of EC2 instances that run a
