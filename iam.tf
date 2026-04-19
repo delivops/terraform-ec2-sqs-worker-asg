@@ -18,8 +18,8 @@ resource "aws_iam_role_policy_attachment" "ecr_pull" {
 }
 
 resource "aws_iam_role_policy" "sqs" {
-  name  = "${var.environment}-${var.name}-sqs"
-  role  = aws_iam_role.worker.id
+  name = "${var.environment}-${var.name}-sqs"
+  role = aws_iam_role.worker.id
 
   policy = jsonencode({
     Version = "2012-10-17"
